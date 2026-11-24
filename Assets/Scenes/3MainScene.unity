@@ -706,7 +706,7 @@ GameObject:
   - component: {fileID: 171503922}
   - component: {fileID: 171503921}
   - component: {fileID: 171503920}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4938,7 +4938,7 @@ MonoBehaviour:
   mainCamera: {fileID: 330585545}
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   planetPlacement: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

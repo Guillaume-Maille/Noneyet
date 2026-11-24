@@ -18,8 +18,10 @@ public class MousePosition : MonoBehaviour
     void Update()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        //print(ray);   debugging planet position stuck at 0,0,0
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask))
         {
+            //print('a');   debugging planet position stuck at 0,0,0
             transform.position = raycastHit.point;
             planetPlacement = raycastHit.point;
         }
