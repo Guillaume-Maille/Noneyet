@@ -1141,6 +1141,7 @@ GameObject:
   - component: {fileID: 1522478183}
   - component: {fileID: 1522478182}
   - component: {fileID: 1522478185}
+  - component: {fileID: 1522478187}
   - component: {fileID: 1522478186}
   m_Layer: 0
   m_Name: Main Camera
@@ -1371,7 +1372,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1522478181}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981cc55e86446c54caaf964b8b0b0ff6, type: 3}
+  m_Script: {fileID: 11500000, guid: 362f2b7b9de69e54186b3c6a2f746bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraManager
   target: {fileID: 165059777}
@@ -1383,7 +1384,29 @@ MonoBehaviour:
   orthoSize: 20
   distance: 200
   zoomSpeed: 20
+  minZoom: 2
   rotateSpeed: 90
+  smoothTime: 0.4
+--- !u!114 &1522478187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522478181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68c531a1e6317c8439ed303e601a9016, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClickToZoom
+  isoCamera: {fileID: 1522478186}
+  cam: {fileID: 0}
+  manager: {fileID: 0}
+  clickableLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  padding: 1.5
+  backKey: 27
 --- !u!1 &1602449345
 GameObject:
   m_ObjectHideFlags: 0
