@@ -3,10 +3,17 @@ using UnityEngine;
 // Isometric camera that orbits a focus point. By default the focus is the
 // spaceship ("home"). Other scripts can call FocusOn() to glide over to an
 // object and zoom in, and ReturnHome() to glide back.
+//
+// [ExecuteAlways] makes it also run outside Play mode, so the Scene and Game
+// views show the isometric angle, projection and zoom while you edit.
+[ExecuteAlways]
 public class IsometricCamera : MonoBehaviour
 {
     [SerializeField] private Transform target;          // the spaceship (home focus)
     [SerializeField] private Camera cam;
+
+    [Tooltip("Show the camera's angle and zoom in the editor. Turn off if you want to move the camera by hand outside Play mode.")]
+    [SerializeField] private bool previewInEditor = true;
 
     [Header("Isometric angle")]
     [SerializeField] private float pitch = 35.264f;     // true isometric
@@ -48,16 +55,53 @@ public class IsometricCamera : MonoBehaviour
 
     void Start()
     {
-        if (cam == null) cam = GetComponent<Camera>();
+        if (!Application.isPlaying) return;     // edit mode is handled by EditorPreview()
 
-        cam.orthographic = useOrthographic;
-        if (useOrthographic) cam.orthographicSize = orthoSize;
-        else cam.fieldOfView = telephotoFov;
+        if (cam == null) cam = GetComponent<Camera>();
+        if (target == null)
+        {
+            Debug.LogError("IsometricCamera: no Target assigned (drag your WorldCentre or ship in).", this);
+            enabled = false;
+            return;
+        }
+
+        ApplyProjection();
 
         homeZoom = useOrthographic ? orthoSize : distance;
         currentZoom = targetZoom = homeZoom;
         focusPoint = target.position;
     }
+
+    private void ApplyProjection()
+    {
+        cam.orthographic = useOrthographic;
+        if (useOrthographic) cam.orthographicSize = orthoSize;
+        else cam.fieldOfView = telephotoFov;
+    }
+
+    // Outside Play mode: put the camera straight at its home position, no smoothing or input.
+    private void EditorPreview()
+    {
+        if (!previewInEditor || target == null) return;
+        if (cam == null) cam = GetComponent<Camera>();
+        if (cam == null) return;
+
+        ApplyProjection();
+
+        Quaternion angle = Quaternion.Euler(pitch, yaw, 0f);
+        transform.rotation = angle;
+        transform.position = target.position - angle * Vector3.forward * distance;
+    }
+
+#if UNITY_EDITOR
+    // Called when you change a value in the Inspector. Ask Unity to run an
+    // update straight away so the views refresh without having to click anything.
+    void OnValidate()
+    {
+        if (!Application.isPlaying)
+            UnityEditor.EditorApplication.QueuePlayerLoopUpdate();
+    }
+#endif
 
     // Glide to an object and zoom so its bounds fill the view.
     // padding 1.5 = the object takes up about two thirds of the screen height.
@@ -94,6 +138,12 @@ public class IsometricCamera : MonoBehaviour
 
     void LateUpdate()
     {
+        if (!Application.isPlaying)
+        {
+            EditorPreview();
+            return;
+        }
+
         // Orbit (Z/X aren't used elsewhere in the project)
         if (Input.GetKey(KeyCode.Z)) yaw += rotateSpeed * Time.deltaTime;
         if (Input.GetKey(KeyCode.X)) yaw -= rotateSpeed * Time.deltaTime;

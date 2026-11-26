@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 // Click any object with a collider to glide the camera over and zoom in.
 // Click empty space (or press Escape) to glide back to the ship.
 //
-// Runs before Manager.cs, so on the click that places a planet,
+// Runs before Manager.cs, so on the click that places a planet or asteroid,
 // Manager is still in "placing" mode and this script ignores the click.
 [DefaultExecutionOrder(-50)]
 public class ClickToZoom : MonoBehaviour
@@ -24,12 +24,26 @@ public class ClickToZoom : MonoBehaviour
     void Start()
     {
         if (cam == null) cam = Camera.main;
-        if (isoCamera == null) isoCamera = cam.GetComponent<IsometricCamera>();
+
+        // Look on the camera first, then anywhere in the scene.
+        if (isoCamera == null && cam != null) isoCamera = cam.GetComponent<IsometricCamera>();
+        if (isoCamera == null) isoCamera = FindFirstObjectByType<IsometricCamera>();
+
         if (manager == null) manager = FindFirstObjectByType<Manager>();
+
+        if (cam == null)
+            Debug.LogError("ClickToZoom: no camera found. Tag your camera 'MainCamera' or drag it into the Cam field.", this);
+        if (isoCamera == null)
+            Debug.LogError("ClickToZoom: no IsometricCamera found in the scene. Add it to your camera, or drag it into the Iso Camera field.", this);
     }
 
     void Update()
     {
+        if (cam == null || isoCamera == null) return; // setup problem, already reported in Start
+
+        // While placing a planet or asteroid, clicks and Escape belong to Manager.
+        if (manager != null && manager.IsPlacing) return;
+
         if (Input.GetKeyDown(backKey))
         {
             isoCamera.ReturnHome();
@@ -40,7 +54,6 @@ public class ClickToZoom : MonoBehaviour
 
         // Leave clicks alone when something else owns them.
         if (DialogueManager.IsDialogueOpen) return;
-        if (manager != null && manager.IsPlacing) return;
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return; // clicked on UI
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
