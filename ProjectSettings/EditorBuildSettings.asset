@@ -17,5 +17,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/3MainScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: e1d7b7c41d7e1f24996f1a64ac622c40
+  - enabled: 1
+    path: Assets/Scenes/Challenges.unity
+    guid: 6396a647aa9e36d469d272e50193894b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 35845fe01580c41289b024647b1d1c53, type: 3}
