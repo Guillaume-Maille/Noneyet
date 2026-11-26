@@ -9,7 +9,6 @@ public class NextScene : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Button Clicked");
             SceneManager.LoadScene("Challenges");
         }
     }
