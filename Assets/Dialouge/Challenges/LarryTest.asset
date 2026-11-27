@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: LarryTest
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
   lines:
-  - speakerName: 
+  - speakerName: Larry
     portrait: {fileID: 0}
     side: 0
-    text: 2
+    text: you are da real one, big ups
+  - speakerName: Larry
+    portrait: {fileID: 0}
+    side: 0
+    text: BIG ASTEROIDS SHOWING UP
+  - speakerName: Larry
+    portrait: {fileID: 0}
+    side: 0
+    text: DUCK

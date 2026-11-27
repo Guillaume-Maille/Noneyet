@@ -13,6 +13,7 @@ public class Manager : MonoBehaviour
     [SerializeField] private GameObject creationGroup;
 
     [Header("Asteroids")]
+    [SerializeField] private GameObject asteroidCreationGroup;
     [Tooltip("One is picked at random each time. Give each a collider if you want click-to-zoom on it.")]
     [SerializeField] private GameObject[] asteroidPrefabs;
     [Tooltip("A see-through preview that follows the mouse. Must NOT have a collider.")]
@@ -199,6 +200,7 @@ public class Manager : MonoBehaviour
         Quaternion rotation = randomRotation ? Random.rotation : Quaternion.identity;
         GameObject asteroid = Instantiate(prefab, asteroidPlacement, rotation, asteroidParent);
         asteroid.transform.localScale *= Random.Range(scaleRange.x, scaleRange.y);
+        asteroidCreationGroup.SetActive(true);
     }
 
     // ---------------- Helpers ----------------
