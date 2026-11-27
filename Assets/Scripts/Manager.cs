@@ -13,7 +13,6 @@ public class Manager : MonoBehaviour
     [SerializeField] private GameObject creationGroup;
 
     [Header("Asteroids")]
-    [SerializeField] private GameObject asteroidCreationGroup;
     [Tooltip("One is picked at random each time. Give each a collider if you want click-to-zoom on it.")]
     [SerializeField] private GameObject[] asteroidPrefabs;
     [Tooltip("A see-through preview that follows the mouse. Must NOT have a collider.")]
@@ -34,6 +33,13 @@ public class Manager : MonoBehaviour
     [Tooltip("The same layer your placement plane is on (the one MousePosition uses).")]
     [SerializeField] private LayerMask placementLayer;
 
+    [Header("Placed objects")]
+    [Tooltip("Everything this script places (planets, gaps, asteroids) is put on this layer, " +
+             "so ClickToZoom can find them. Must match a layer in Tags & Layers. Leave empty to keep the prefab's own layer.")]
+    [SerializeField] private string placedLayerName = "Zoomable";
+
+    private int placedLayer = -1;
+
     private PlacingMode mode = PlacingMode.None;
     private MousePosition mousePositionScript;
     private Vector3 position;
@@ -48,7 +54,17 @@ public class Manager : MonoBehaviour
     {
         mousePositionScript = guidePlanet.GetComponent<MousePosition>();
         if (cam == null) cam = Camera.main;
-        if (guideAsteroid != null) guideAsteroid.SetActive(false);
+
+        SetUpAsteroidAiming();
+        SetUpGuideAsteroid();
+
+        if (!string.IsNullOrEmpty(placedLayerName))
+        {
+            placedLayer = LayerMask.NameToLayer(placedLayerName);
+            if (placedLayer == -1)
+                Debug.LogWarning($"Manager: there's no layer called '{placedLayerName}'. Add it in Edit > Project Settings > Tags and Layers, " +
+                                 "or placed objects keep their prefab's layer.", this);
+        }
     }
 
     public void CloseCreateMenu()
@@ -135,7 +151,8 @@ public class Manager : MonoBehaviour
     private void PlaceAtMouse(GameObject prefab)
     {
         position = mousePositionScript.planetPlacement;
-        Instantiate(prefab, position, Quaternion.identity);
+        GameObject placed = Instantiate(prefab, position, Quaternion.identity);
+        SetPlacedLayer(placed);
 
         creationGroup.SetActive(true);
         StopPlacing();
@@ -200,10 +217,76 @@ public class Manager : MonoBehaviour
         Quaternion rotation = randomRotation ? Random.rotation : Quaternion.identity;
         GameObject asteroid = Instantiate(prefab, asteroidPlacement, rotation, asteroidParent);
         asteroid.transform.localScale *= Random.Range(scaleRange.x, scaleRange.y);
-        asteroidCreationGroup.SetActive(true);
+        SetPlacedLayer(asteroid);
+        creationGroup.SetActive(true);
+    }
+
+    // ---------------- Setup checks ----------------
+
+    // The guide only shows when the mouse ray hits the placement plane,
+    // so make sure we actually have a placement layer to aim at.
+    private void SetUpAsteroidAiming()
+    {
+        if (placementLayer.value == 0 && mousePositionScript != null)
+        {
+            // Nothing picked: use the same layer the planet guide already uses.
+            placementLayer = mousePositionScript.PlacementMask;
+        }
+
+        if (placementLayer.value == 0)
+        {
+            Debug.LogWarning("Manager: Placement Layer is set to Nothing, so the asteroid guide can't find the plane " +
+                             "and asteroids can't be placed. Set it to your placement plane's layer.", this);
+        }
+    }
+
+    private void SetUpGuideAsteroid()
+    {
+        if (guideAsteroid == null)
+        {
+            Debug.LogWarning("Manager: no Guide Asteroid assigned. Asteroids can still be placed, but there's no preview.", this);
+            return;
+        }
+
+        // If a prefab from the Project window was dragged in (not an object in the scene),
+        // turning it on does nothing visible. Make a copy in the scene to use instead.
+        if (!guideAsteroid.scene.IsValid())
+        {
+            guideAsteroid = Instantiate(guideAsteroid);
+            guideAsteroid.name = "Guide Asteroid (copy)";
+        }
+
+        // The preview mustn't block the mouse ray or be clickable, so remove its colliders
+        // and put it on the built-in Ignore Raycast layer.
+        foreach (Collider col in guideAsteroid.GetComponentsInChildren<Collider>(true))
+            Destroy(col);
+
+        int ignoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+        foreach (Transform t in guideAsteroid.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = ignoreRaycast;
+
+        // A guide that sits under an inactive parent can never show up.
+        Transform parent = guideAsteroid.transform.parent;
+        if (parent != null && !parent.gameObject.activeInHierarchy)
+        {
+            Debug.LogWarning($"Manager: the Guide Asteroid is inside '{parent.name}', which is turned off, " +
+                             "so it can't show. Moving it out to the top of the Hierarchy.", this);
+            guideAsteroid.transform.SetParent(null, true);
+        }
+
+        guideAsteroid.SetActive(false);
     }
 
     // ---------------- Helpers ----------------
+
+    // Puts the object and all its children on the placed-objects layer
+    // (children too, in case the collider sits on a child mesh).
+    private void SetPlacedLayer(GameObject obj)
+    {
+        if (placedLayer == -1) return;
+        foreach (Transform t in obj.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = placedLayer;
+    }
 
     private bool PointerOverUI()
     {

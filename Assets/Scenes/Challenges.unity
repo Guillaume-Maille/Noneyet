@@ -684,7 +684,6 @@ MonoBehaviour:
   newPlanet: {fileID: 615603488521131112, guid: 68288c6bcfb8089468b9cd9909ff8e1d, type: 3}
   newGap: {fileID: 615603488521131112, guid: 68288c6bcfb8089468b9cd9909ff8e1d, type: 3}
   creationGroup: {fileID: 157679478}
-  asteroidCreationGroup: {fileID: 157679478}
   asteroidPrefabs:
   - {fileID: 3989072531843302279, guid: 2b06d152b69adee4fbe706ea8935ea29, type: 3}
   - {fileID: 4181138032173337494, guid: 6d607c671283aa14095a2d94da20faf9, type: 3}
@@ -694,12 +693,13 @@ MonoBehaviour:
   minRadius: 3
   maxRadius: 29.5
   randomRotation: 1
-  scaleRange: {x: 0.7, y: 1.3}
+  scaleRange: {x: 0.39, y: 0.64}
   keepPlacingKey: 304
   cam: {fileID: 1522478183}
   placementLayer:
     serializedVersion: 2
     m_Bits: 8
+  placedLayerName: Zoomable
 --- !u!1 &440261142
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,15 +760,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d5d48879adfccf04abc9ab88c6c0f4c9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 16.931175
+      value: 16.931072
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d5d48879adfccf04abc9ab88c6c0f4c9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2.5429363
+      value: 2.5429208
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d5d48879adfccf04abc9ab88c6c0f4c9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2.216919
+      value: 2.2169054
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d5d48879adfccf04abc9ab88c6c0f4c9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3497,6 +3497,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Asteroid Guide
       objectReference: {fileID: 0}
+    - target: {fileID: 2200529975874685755, guid: 2019de27b45012b40a18d8a1facd0a99, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3553,6 +3557,10 @@ PrefabInstance:
     - target: {fileID: 4181138032173337494, guid: 6d607c671283aa14095a2d94da20faf9, type: 3}
       propertyPath: m_Name
       value: AsteroidsRotate
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181138032173337494, guid: 6d607c671283aa14095a2d94da20faf9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
